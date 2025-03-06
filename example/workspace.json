@@ -1,0 +1,907 @@
+{
+  "configuration" : { },
+  "description" : "Architecture for cargo shipping system based on Evans' DDD book",
+  "documentation" : {
+    "decisions" : [ {
+      "content" : "# 1. Mobile Framework Selection\n\nDate: 2025-03-06 (Updated)\n\n## Status\n\nRevised and Accepted\n\n## Context\n\nWe need to develop mobile applications for both iOS and Android platforms for our cargo shipping system. Our primary concerns include development efficiency, performance, maintainability, and offline capabilities. The applications (Booking App and Sales Management App) need to provide a high-quality user experience with local-first functionality allowing users to work primarily offline with periodic synchronization to the backend.\n\n## Decision\n\nWe will use native development approaches for both platforms:\n- Android: Kotlin with Jetpack Compose for UI\n- iOS: Swift with SwiftUI for UI\n\nThis approach replaces the previous consideration of using React Native.\n\n## Consequences\n\n### Positive\n\n- Optimal performance on each platform by using platform-specific technologies\n- Full access to native APIs and capabilities without bridges or wrappers\n- Better support for complex offline-first functionality and local storage\n- Direct integration with platform-specific security features\n- Native look and feel for each platform, improving user experience\n- Ability to leverage platform-specific optimizations\n- Modern declarative UI frameworks (Jetpack Compose and SwiftUI) provide similar development paradigms across platforms\n\n### Negative\n\n- Requires maintaining two separate codebases\n- Higher development costs due to platform-specific development teams or expertise\n- Potentially longer development cycles for feature parity across platforms\n- Limited code sharing between platforms (primarily architecture patterns and business logic design)\n- Need for platform-specific testing pipelines\n\n## Implementation Approach\n\n- Establish a common architecture pattern across both platforms (following Clean Architecture principles)\n- Create shared domain models and business rules documentation to maintain consistency\n- Implement robust offline-first capabilities with conflict resolution strategies\n- Design a synchronization protocol that efficiently handles intermittent connectivity\n- Follow DDD (Domain-Driven Design) principles for both applications to maintain conceptual integrity\n- Develop common test cases that can be implemented on both platforms\n",
+      "date" : "2025-03-06T00:00:00Z",
+      "format" : "Markdown",
+      "id" : "1",
+      "status" : "Revised",
+      "title" : "Mobile Framework Selection"
+    } ],
+    "sections" : [ {
+      "content" : "# Cargo Shipping System Overview\n\n## Introduction\n\nThe Cargo Shipping System is designed following Domain-Driven Design (DDD) principles as described in Eric Evans' book. The system enables customers to book and track cargo shipments while providing staff with tools to manage sales and customer relationships.\n\n## Architecture Principles\n\nThe architecture follows the principles of Clean Architecture as defined by Robert C. Martin (\"Uncle Bob\"):\n\n1. **Independence from frameworks**: The system core doesn't depend on the existence of libraries or frameworks.\n2. **Testability**: Business rules can be tested without UI, database, web server, or any external element.\n3. **Independence from UI**: The UI can change without changing the business rules.\n4. **Independence from database**: Business rules aren't bound to a specific database.\n5. **Independence from external agencies**: Business rules don't know anything about interfaces to the outside world.\n\n## Bounded Contexts\n\nThe system is divided into the following bounded contexts:\n\n1. **Booking Context**: Handles cargo booking operations\n2. **Tracking Context**: Handles cargo tracking operations\n3. **Routing Context**: Handles cargo routing operations\n4. **Sales Context**: Handles sales and customer relationship management\n\n## Mobile Applications\n\nThe system includes two mobile applications:\n\n1. **Booking App**: Customer-facing application for booking and tracking cargo\n2. **Sales Management App**: Staff-facing application for managing sales and customer relationships\n\nBoth applications are built using React Native and follow Clean Architecture principles.\n\n## Backend System\n\nThe backend system provides a REST API for the mobile applications and handles all business logic. It's built using Spring Boot and follows DDD and Clean Architecture principles.\n",
+      "filename" : "system-overview.md",
+      "format" : "Markdown",
+      "order" : 1,
+      "title" : ""
+    } ]
+  },
+  "id" : 1,
+  "lastModifiedDate" : "2025-03-06T18:25:34Z",
+  "model" : {
+    "deploymentNodes" : [ {
+      "containerInstances" : [ {
+        "containerId" : "4",
+        "deploymentGroups" : [ "Default" ],
+        "environment" : "Production",
+        "id" : "49",
+        "instanceId" : 1,
+        "properties" : {
+          "structurizr.dsl.identifier" : "f5f01bc9-c0b4-4481-bdd7-32fb9bbd813c.d317e1bf-dac8-45e3-8a7f-98ae5fffe55c.1b2aeb87-706f-4173-a105-5bab45334332"
+        },
+        "relationships" : [ {
+          "description" : "Reads from and writes to",
+          "destinationId" : "50",
+          "id" : "51",
+          "linkedRelationshipId" : "41",
+          "sourceId" : "49",
+          "technology" : "JDBC"
+        } ],
+        "tags" : "Container Instance"
+      }, {
+        "containerId" : "40",
+        "deploymentGroups" : [ "Default" ],
+        "environment" : "Production",
+        "id" : "50",
+        "instanceId" : 1,
+        "properties" : {
+          "structurizr.dsl.identifier" : "f5f01bc9-c0b4-4481-bdd7-32fb9bbd813c.d317e1bf-dac8-45e3-8a7f-98ae5fffe55c.9a4aa5a9-95a4-4f16-867b-187b78225a54"
+        },
+        "tags" : "Container Instance"
+      } ],
+      "environment" : "Production",
+      "id" : "48",
+      "instances" : "1",
+      "name" : "Cloud Platform",
+      "properties" : {
+        "structurizr.dsl.identifier" : "f5f01bc9-c0b4-4481-bdd7-32fb9bbd813c.d317e1bf-dac8-45e3-8a7f-98ae5fffe55c"
+      },
+      "tags" : "Element,Deployment Node"
+    }, {
+      "children" : [ {
+        "containerInstances" : [ {
+          "containerId" : "24",
+          "deploymentGroups" : [ "Default" ],
+          "environment" : "Production",
+          "id" : "54",
+          "instanceId" : 1,
+          "properties" : {
+            "structurizr.dsl.identifier" : "f5f01bc9-c0b4-4481-bdd7-32fb9bbd813c.52ef2d25-6c39-4d2f-b809-207c4ae816fe.104da557-a0e2-44d4-854a-eddd85af3c9a.86fdc185-5905-404e-9223-2661710e2341"
+          },
+          "relationships" : [ {
+            "description" : "Makes API calls to",
+            "destinationId" : "49",
+            "id" : "55",
+            "linkedRelationshipId" : "31",
+            "sourceId" : "54",
+            "technology" : "JSON/HTTPS"
+          } ],
+          "tags" : "Container Instance"
+        }, {
+          "containerId" : "32",
+          "deploymentGroups" : [ "Default" ],
+          "environment" : "Production",
+          "id" : "56",
+          "instanceId" : 1,
+          "properties" : {
+            "structurizr.dsl.identifier" : "f5f01bc9-c0b4-4481-bdd7-32fb9bbd813c.52ef2d25-6c39-4d2f-b809-207c4ae816fe.104da557-a0e2-44d4-854a-eddd85af3c9a.0d0e7da5-7108-4f99-951a-3780a064632d"
+          },
+          "relationships" : [ {
+            "description" : "Makes API calls to",
+            "destinationId" : "49",
+            "id" : "57",
+            "linkedRelationshipId" : "39",
+            "sourceId" : "56",
+            "technology" : "JSON/HTTPS"
+          } ],
+          "tags" : "Container Instance"
+        } ],
+        "environment" : "Production",
+        "id" : "53",
+        "instances" : "1",
+        "name" : "Apple App Store",
+        "properties" : {
+          "structurizr.dsl.identifier" : "f5f01bc9-c0b4-4481-bdd7-32fb9bbd813c.52ef2d25-6c39-4d2f-b809-207c4ae816fe.104da557-a0e2-44d4-854a-eddd85af3c9a"
+        },
+        "tags" : "Element,Deployment Node"
+      }, {
+        "containerInstances" : [ {
+          "containerId" : "24",
+          "deploymentGroups" : [ "Default" ],
+          "environment" : "Production",
+          "id" : "59",
+          "instanceId" : 1,
+          "properties" : {
+            "structurizr.dsl.identifier" : "f5f01bc9-c0b4-4481-bdd7-32fb9bbd813c.52ef2d25-6c39-4d2f-b809-207c4ae816fe.ee536f02-d494-408f-822f-f6d81318b3ed.dfdf96a4-a5dd-45a9-9da2-75a381cb9355"
+          },
+          "relationships" : [ {
+            "description" : "Makes API calls to",
+            "destinationId" : "49",
+            "id" : "60",
+            "linkedRelationshipId" : "31",
+            "sourceId" : "59",
+            "technology" : "JSON/HTTPS"
+          } ],
+          "tags" : "Container Instance"
+        }, {
+          "containerId" : "32",
+          "deploymentGroups" : [ "Default" ],
+          "environment" : "Production",
+          "id" : "61",
+          "instanceId" : 1,
+          "properties" : {
+            "structurizr.dsl.identifier" : "f5f01bc9-c0b4-4481-bdd7-32fb9bbd813c.52ef2d25-6c39-4d2f-b809-207c4ae816fe.ee536f02-d494-408f-822f-f6d81318b3ed.2eb78e81-c5ed-4b85-8c1a-5528f479cf43"
+          },
+          "relationships" : [ {
+            "description" : "Makes API calls to",
+            "destinationId" : "49",
+            "id" : "62",
+            "linkedRelationshipId" : "39",
+            "sourceId" : "61",
+            "technology" : "JSON/HTTPS"
+          } ],
+          "tags" : "Container Instance"
+        } ],
+        "environment" : "Production",
+        "id" : "58",
+        "instances" : "1",
+        "name" : "Google Play Store",
+        "properties" : {
+          "structurizr.dsl.identifier" : "f5f01bc9-c0b4-4481-bdd7-32fb9bbd813c.52ef2d25-6c39-4d2f-b809-207c4ae816fe.ee536f02-d494-408f-822f-f6d81318b3ed"
+        },
+        "tags" : "Element,Deployment Node"
+      } ],
+      "environment" : "Production",
+      "id" : "52",
+      "instances" : "1",
+      "name" : "Mobile App Stores",
+      "properties" : {
+        "structurizr.dsl.identifier" : "f5f01bc9-c0b4-4481-bdd7-32fb9bbd813c.52ef2d25-6c39-4d2f-b809-207c4ae816fe"
+      },
+      "tags" : "Element,Deployment Node"
+    } ],
+    "people" : [ {
+      "description" : "A user of the cargo shipping system",
+      "id" : "1",
+      "location" : "Unspecified",
+      "name" : "User",
+      "properties" : {
+        "structurizr.dsl.identifier" : "user"
+      },
+      "relationships" : [ {
+        "description" : "Books and tracks cargo using",
+        "destinationId" : "3",
+        "id" : "44",
+        "sourceId" : "1",
+        "tags" : "Relationship"
+      } ],
+      "tags" : "Element,Person"
+    }, {
+      "description" : "Staff member of the cargo shipping company",
+      "id" : "2",
+      "location" : "Unspecified",
+      "name" : "Staff",
+      "properties" : {
+        "structurizr.dsl.identifier" : "staff"
+      },
+      "relationships" : [ {
+        "description" : "Manages sales and customers using",
+        "destinationId" : "3",
+        "id" : "45",
+        "sourceId" : "2",
+        "tags" : "Relationship"
+      } ],
+      "tags" : "Element,Person"
+    } ],
+    "softwareSystems" : [ {
+      "containers" : [ {
+        "components" : [ {
+          "description" : "Handles cargo booking operations",
+          "documentation" : { },
+          "id" : "5",
+          "name" : "Booking Service",
+          "properties" : {
+            "structurizr.dsl.identifier" : "cargosystem.backendsystem.bookingservice"
+          },
+          "relationships" : [ {
+            "description" : "Uses",
+            "destinationId" : "8",
+            "id" : "18",
+            "sourceId" : "5",
+            "tags" : "Relationship"
+          } ],
+          "tags" : "Element,Component",
+          "technology" : "Spring Service"
+        }, {
+          "description" : "Handles cargo tracking operations",
+          "documentation" : { },
+          "id" : "6",
+          "name" : "Tracking Service",
+          "properties" : {
+            "structurizr.dsl.identifier" : "cargosystem.backendsystem.trackingservice"
+          },
+          "relationships" : [ {
+            "description" : "Uses",
+            "destinationId" : "9",
+            "id" : "19",
+            "sourceId" : "6",
+            "tags" : "Relationship"
+          } ],
+          "tags" : "Element,Component",
+          "technology" : "Spring Service"
+        }, {
+          "description" : "Handles cargo routing operations",
+          "documentation" : { },
+          "id" : "7",
+          "name" : "Routing Service",
+          "properties" : {
+            "structurizr.dsl.identifier" : "cargosystem.backendsystem.routingservice"
+          },
+          "relationships" : [ {
+            "description" : "Uses",
+            "destinationId" : "10",
+            "id" : "20",
+            "sourceId" : "7",
+            "tags" : "Relationship"
+          } ],
+          "tags" : "Element,Component",
+          "technology" : "Spring Service"
+        }, {
+          "description" : "Domain model for booking bounded context",
+          "documentation" : { },
+          "id" : "8",
+          "name" : "Booking Domain",
+          "properties" : {
+            "structurizr.dsl.identifier" : "cargosystem.backendsystem.bookingdomain"
+          },
+          "relationships" : [ {
+            "description" : "Persists via",
+            "destinationId" : "11",
+            "id" : "21",
+            "sourceId" : "8",
+            "tags" : "Relationship"
+          } ],
+          "tags" : "Element,Component",
+          "technology" : "Java"
+        }, {
+          "description" : "Domain model for tracking bounded context",
+          "documentation" : { },
+          "id" : "9",
+          "name" : "Tracking Domain",
+          "properties" : {
+            "structurizr.dsl.identifier" : "cargosystem.backendsystem.trackingdomain"
+          },
+          "relationships" : [ {
+            "description" : "Persists via",
+            "destinationId" : "12",
+            "id" : "22",
+            "sourceId" : "9",
+            "tags" : "Relationship"
+          } ],
+          "tags" : "Element,Component",
+          "technology" : "Java"
+        }, {
+          "description" : "Domain model for routing bounded context",
+          "documentation" : { },
+          "id" : "10",
+          "name" : "Routing Domain",
+          "properties" : {
+            "structurizr.dsl.identifier" : "cargosystem.backendsystem.routingdomain"
+          },
+          "relationships" : [ {
+            "description" : "Persists via",
+            "destinationId" : "13",
+            "id" : "23",
+            "sourceId" : "10",
+            "tags" : "Relationship"
+          } ],
+          "tags" : "Element,Component",
+          "technology" : "Java"
+        }, {
+          "description" : "Repository for booking aggregates",
+          "documentation" : { },
+          "id" : "11",
+          "name" : "Booking Repository",
+          "properties" : {
+            "structurizr.dsl.identifier" : "cargosystem.backendsystem.bookingrepository"
+          },
+          "tags" : "Element,Component",
+          "technology" : "Spring Data"
+        }, {
+          "description" : "Repository for tracking aggregates",
+          "documentation" : { },
+          "id" : "12",
+          "name" : "Tracking Repository",
+          "properties" : {
+            "structurizr.dsl.identifier" : "cargosystem.backendsystem.trackingrepository"
+          },
+          "tags" : "Element,Component",
+          "technology" : "Spring Data"
+        }, {
+          "description" : "Repository for routing aggregates",
+          "documentation" : { },
+          "id" : "13",
+          "name" : "Routing Repository",
+          "properties" : {
+            "structurizr.dsl.identifier" : "cargosystem.backendsystem.routingrepository"
+          },
+          "tags" : "Element,Component",
+          "technology" : "Spring Data"
+        }, {
+          "description" : "REST API gateway for mobile applications",
+          "documentation" : { },
+          "id" : "14",
+          "name" : "API Gateway",
+          "properties" : {
+            "structurizr.dsl.identifier" : "cargosystem.backendsystem.apigateway"
+          },
+          "relationships" : [ {
+            "description" : "Forwards booking requests to",
+            "destinationId" : "5",
+            "id" : "15",
+            "sourceId" : "14",
+            "tags" : "Relationship"
+          }, {
+            "description" : "Forwards tracking requests to",
+            "destinationId" : "6",
+            "id" : "16",
+            "sourceId" : "14",
+            "tags" : "Relationship"
+          }, {
+            "description" : "Forwards routing requests to",
+            "destinationId" : "7",
+            "id" : "17",
+            "sourceId" : "14",
+            "tags" : "Relationship"
+          } ],
+          "tags" : "Element,Component",
+          "technology" : "Spring REST"
+        } ],
+        "description" : "Provides cargo booking and tracking functionality via a REST API",
+        "documentation" : { },
+        "id" : "4",
+        "name" : "Backend System",
+        "properties" : {
+          "structurizr.dsl.identifier" : "cargosystem.backendsystem"
+        },
+        "relationships" : [ {
+          "description" : "Reads from and writes to",
+          "destinationId" : "40",
+          "id" : "41",
+          "sourceId" : "4",
+          "tags" : "Relationship",
+          "technology" : "JDBC"
+        } ],
+        "tags" : "Element,Container",
+        "technology" : "Java, Spring Boot"
+      }, {
+        "components" : [ {
+          "description" : "User interface for booking operations",
+          "documentation" : { },
+          "id" : "25",
+          "name" : "Booking UI",
+          "properties" : {
+            "structurizr.dsl.identifier" : "cargosystem.bookingapp.bookingui"
+          },
+          "relationships" : [ {
+            "description" : "Uses",
+            "destinationId" : "26",
+            "id" : "27",
+            "sourceId" : "25",
+            "tags" : "Relationship"
+          } ],
+          "tags" : "Element,Component",
+          "technology" : "React Native"
+        }, {
+          "description" : "Client for the booking API",
+          "documentation" : { },
+          "id" : "26",
+          "name" : "Booking API Client",
+          "properties" : {
+            "structurizr.dsl.identifier" : "cargosystem.bookingapp.bookingclient"
+          },
+          "relationships" : [ {
+            "description" : "Makes API calls to",
+            "destinationId" : "14",
+            "id" : "28",
+            "sourceId" : "26",
+            "tags" : "Relationship",
+            "technology" : "JSON/HTTPS"
+          }, {
+            "description" : "Makes API calls to",
+            "destinationId" : "4",
+            "id" : "29",
+            "linkedRelationshipId" : "28",
+            "sourceId" : "26",
+            "technology" : "JSON/HTTPS"
+          } ],
+          "tags" : "Element,Component",
+          "technology" : "JavaScript"
+        } ],
+        "description" : "Allows customers to book cargo shipments",
+        "documentation" : { },
+        "id" : "24",
+        "name" : "Booking Mobile App",
+        "properties" : {
+          "structurizr.dsl.identifier" : "cargosystem.bookingapp"
+        },
+        "relationships" : [ {
+          "description" : "Makes API calls to",
+          "destinationId" : "14",
+          "id" : "30",
+          "linkedRelationshipId" : "28",
+          "sourceId" : "24",
+          "technology" : "JSON/HTTPS"
+        }, {
+          "description" : "Makes API calls to",
+          "destinationId" : "4",
+          "id" : "31",
+          "linkedRelationshipId" : "28",
+          "sourceId" : "24",
+          "technology" : "JSON/HTTPS"
+        } ],
+        "tags" : "Element,Container",
+        "technology" : "React Native"
+      }, {
+        "components" : [ {
+          "description" : "User interface for sales operations",
+          "documentation" : { },
+          "id" : "33",
+          "name" : "Sales UI",
+          "properties" : {
+            "structurizr.dsl.identifier" : "cargosystem.salesapp.salesui"
+          },
+          "relationships" : [ {
+            "description" : "Uses",
+            "destinationId" : "34",
+            "id" : "35",
+            "sourceId" : "33",
+            "tags" : "Relationship"
+          } ],
+          "tags" : "Element,Component",
+          "technology" : "React Native"
+        }, {
+          "description" : "Client for the sales API",
+          "documentation" : { },
+          "id" : "34",
+          "name" : "Sales API Client",
+          "properties" : {
+            "structurizr.dsl.identifier" : "cargosystem.salesapp.salesclient"
+          },
+          "relationships" : [ {
+            "description" : "Makes API calls to",
+            "destinationId" : "14",
+            "id" : "36",
+            "sourceId" : "34",
+            "tags" : "Relationship",
+            "technology" : "JSON/HTTPS"
+          }, {
+            "description" : "Makes API calls to",
+            "destinationId" : "4",
+            "id" : "37",
+            "linkedRelationshipId" : "36",
+            "sourceId" : "34",
+            "technology" : "JSON/HTTPS"
+          } ],
+          "tags" : "Element,Component",
+          "technology" : "JavaScript"
+        } ],
+        "description" : "Allows staff to manage sales and customer relationships",
+        "documentation" : { },
+        "id" : "32",
+        "name" : "Sales Management App",
+        "properties" : {
+          "structurizr.dsl.identifier" : "cargosystem.salesapp"
+        },
+        "relationships" : [ {
+          "description" : "Makes API calls to",
+          "destinationId" : "14",
+          "id" : "38",
+          "linkedRelationshipId" : "36",
+          "sourceId" : "32",
+          "technology" : "JSON/HTTPS"
+        }, {
+          "description" : "Makes API calls to",
+          "destinationId" : "4",
+          "id" : "39",
+          "linkedRelationshipId" : "36",
+          "sourceId" : "32",
+          "technology" : "JSON/HTTPS"
+        } ],
+        "tags" : "Element,Container",
+        "technology" : "React Native"
+      }, {
+        "description" : "Stores all cargo shipping data",
+        "documentation" : { },
+        "id" : "40",
+        "name" : "Database",
+        "properties" : {
+          "structurizr.dsl.identifier" : "cargosystem.database"
+        },
+        "tags" : "Element,Container,Database",
+        "technology" : "PostgreSQL"
+      } ],
+      "description" : "Allows customers to book and track cargo shipments",
+      "documentation" : { },
+      "group" : "Cargo Shipping Company",
+      "id" : "3",
+      "location" : "Unspecified",
+      "name" : "Cargo Shipping System",
+      "properties" : {
+        "structurizr.dsl.identifier" : "cargosystem"
+      },
+      "relationships" : [ {
+        "description" : "Makes payment requests to",
+        "destinationId" : "42",
+        "id" : "46",
+        "sourceId" : "3",
+        "tags" : "Relationship"
+      }, {
+        "description" : "Coordinates shipping with",
+        "destinationId" : "43",
+        "id" : "47",
+        "sourceId" : "3",
+        "tags" : "Relationship"
+      } ],
+      "tags" : "Element,Software System"
+    }, {
+      "description" : "Handles payment processing",
+      "documentation" : { },
+      "id" : "42",
+      "location" : "Unspecified",
+      "name" : "Payment System",
+      "properties" : {
+        "structurizr.dsl.identifier" : "paymentsystem"
+      },
+      "tags" : "Element,Software System,External"
+    }, {
+      "description" : "External shipping providers",
+      "documentation" : { },
+      "id" : "43",
+      "location" : "Unspecified",
+      "name" : "Shipping Partners",
+      "properties" : {
+        "structurizr.dsl.identifier" : "shippingpartners"
+      },
+      "tags" : "Element,Software System,External"
+    } ]
+  },
+  "name" : "Cargo Shipping System",
+  "properties" : {
+    "structurizr.dsl" : "d29ya3NwYWNlIHsKICAgIG5hbWUgIkNhcmdvIFNoaXBwaW5nIFN5c3RlbSIKICAgIGRlc2NyaXB0aW9uICJBcmNoaXRlY3R1cmUgZm9yIGNhcmdvIHNoaXBwaW5nIHN5c3RlbSBiYXNlZCBvbiBFdmFucycgREREIGJvb2siCgogICAgIWlkZW50aWZpZXJzIGhpZXJhcmNoaWNhbAogICAgIWFkcnMgZGVjaXNpb25zCiAgICAhZG9jcyBkb2N1bWVudGF0aW9uCgogICAgbW9kZWwgewogICAgICAgIHVzZXIgPSBwZXJzb24gIlVzZXIiICJBIHVzZXIgb2YgdGhlIGNhcmdvIHNoaXBwaW5nIHN5c3RlbSIKICAgICAgICBzdGFmZiA9IHBlcnNvbiAiU3RhZmYiICJTdGFmZiBtZW1iZXIgb2YgdGhlIGNhcmdvIHNoaXBwaW5nIGNvbXBhbnkiCiAgICAgICAgCiAgICAgICAgIyBHcm91cCAmIFN5c3RlbSBDb250ZXh0CiAgICAgICAgZ3JvdXAgIkNhcmdvIFNoaXBwaW5nIENvbXBhbnkiIHsKICAgICAgICAgICAgY2FyZ29TeXN0ZW0gPSBzb2Z0d2FyZVN5c3RlbSAiQ2FyZ28gU2hpcHBpbmcgU3lzdGVtIiAiQWxsb3dzIGN1c3RvbWVycyB0byBib29rIGFuZCB0cmFjayBjYXJnbyBzaGlwbWVudHMiIHsKICAgICAgICAgICAgICAgICMgQ29udGFpbmVycwogICAgICAgICAgICAgICAgYmFja2VuZFN5c3RlbSA9IGNvbnRhaW5lciAiQmFja2VuZCBTeXN0ZW0iICJQcm92aWRlcyBjYXJnbyBib29raW5nIGFuZCB0cmFja2luZyBmdW5jdGlvbmFsaXR5IHZpYSBhIFJFU1QgQVBJIiAiSmF2YSwgU3ByaW5nIEJvb3QiIHsKICAgICAgICAgICAgICAgICAgICAjIEJhY2tlbmQgQ29tcG9uZW50cwogICAgICAgICAgICAgICAgICAgIGJvb2tpbmdTZXJ2aWNlID0gY29tcG9uZW50ICJCb29raW5nIFNlcnZpY2UiICJIYW5kbGVzIGNhcmdvIGJvb2tpbmcgb3BlcmF0aW9ucyIgIlNwcmluZyBTZXJ2aWNlIgogICAgICAgICAgICAgICAgICAgIHRyYWNraW5nU2VydmljZSA9IGNvbXBvbmVudCAiVHJhY2tpbmcgU2VydmljZSIgIkhhbmRsZXMgY2FyZ28gdHJhY2tpbmcgb3BlcmF0aW9ucyIgIlNwcmluZyBTZXJ2aWNlIgogICAgICAgICAgICAgICAgICAgIHJvdXRpbmdTZXJ2aWNlID0gY29tcG9uZW50ICJSb3V0aW5nIFNlcnZpY2UiICJIYW5kbGVzIGNhcmdvIHJvdXRpbmcgb3BlcmF0aW9ucyIgIlNwcmluZyBTZXJ2aWNlIgogICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICMgRG9tYWluIE1vZGVsIENvbXBvbmVudHMKICAgICAgICAgICAgICAgICAgICBib29raW5nRG9tYWluID0gY29tcG9uZW50ICJCb29raW5nIERvbWFpbiIgIkRvbWFpbiBtb2RlbCBmb3IgYm9va2luZyBib3VuZGVkIGNvbnRleHQiICJKYXZhIgogICAgICAgICAgICAgICAgICAgIHRyYWNraW5nRG9tYWluID0gY29tcG9uZW50ICJUcmFja2luZyBEb21haW4iICJEb21haW4gbW9kZWwgZm9yIHRyYWNraW5nIGJvdW5kZWQgY29udGV4dCIgIkphdmEiCiAgICAgICAgICAgICAgICAgICAgcm91dGluZ0RvbWFpbiA9IGNvbXBvbmVudCAiUm91dGluZyBEb21haW4iICJEb21haW4gbW9kZWwgZm9yIHJvdXRpbmcgYm91bmRlZCBjb250ZXh0IiAiSmF2YSIKICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAjIFJlcG9zaXRvcnkgQ29tcG9uZW50cwogICAgICAgICAgICAgICAgICAgIGJvb2tpbmdSZXBvc2l0b3J5ID0gY29tcG9uZW50ICJCb29raW5nIFJlcG9zaXRvcnkiICJSZXBvc2l0b3J5IGZvciBib29raW5nIGFnZ3JlZ2F0ZXMiICJTcHJpbmcgRGF0YSIKICAgICAgICAgICAgICAgICAgICB0cmFja2luZ1JlcG9zaXRvcnkgPSBjb21wb25lbnQgIlRyYWNraW5nIFJlcG9zaXRvcnkiICJSZXBvc2l0b3J5IGZvciB0cmFja2luZyBhZ2dyZWdhdGVzIiAiU3ByaW5nIERhdGEiCiAgICAgICAgICAgICAgICAgICAgcm91dGluZ1JlcG9zaXRvcnkgPSBjb21wb25lbnQgIlJvdXRpbmcgUmVwb3NpdG9yeSIgIlJlcG9zaXRvcnkgZm9yIHJvdXRpbmcgYWdncmVnYXRlcyIgIlNwcmluZyBEYXRhIgogICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgICMgQVBJIENvbXBvbmVudHMKICAgICAgICAgICAgICAgICAgICBhcGlHYXRld2F5ID0gY29tcG9uZW50ICJBUEkgR2F0ZXdheSIgIlJFU1QgQVBJIGdhdGV3YXkgZm9yIG1vYmlsZSBhcHBsaWNhdGlvbnMiICJTcHJpbmcgUkVTVCIKICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICAjIENvbXBvbmVudCBSZWxhdGlvbnNoaXBzCiAgICAgICAgICAgICAgICAgICAgYXBpR2F0ZXdheSAtPiBib29raW5nU2VydmljZSAiRm9yd2FyZHMgYm9va2luZyByZXF1ZXN0cyB0byIKICAgICAgICAgICAgICAgICAgICBhcGlHYXRld2F5IC0+IHRyYWNraW5nU2VydmljZSAiRm9yd2FyZHMgdHJhY2tpbmcgcmVxdWVzdHMgdG8iCiAgICAgICAgICAgICAgICAgICAgYXBpR2F0ZXdheSAtPiByb3V0aW5nU2VydmljZSAiRm9yd2FyZHMgcm91dGluZyByZXF1ZXN0cyB0byIKICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICBib29raW5nU2VydmljZSAtPiBib29raW5nRG9tYWluICJVc2VzIgogICAgICAgICAgICAgICAgICAgIHRyYWNraW5nU2VydmljZSAtPiB0cmFja2luZ0RvbWFpbiAiVXNlcyIKICAgICAgICAgICAgICAgICAgICByb3V0aW5nU2VydmljZSAtPiByb3V0aW5nRG9tYWluICJVc2VzIgogICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgIGJvb2tpbmdEb21haW4gLT4gYm9va2luZ1JlcG9zaXRvcnkgIlBlcnNpc3RzIHZpYSIKICAgICAgICAgICAgICAgICAgICB0cmFja2luZ0RvbWFpbiAtPiB0cmFja2luZ1JlcG9zaXRvcnkgIlBlcnNpc3RzIHZpYSIKICAgICAgICAgICAgICAgICAgICByb3V0aW5nRG9tYWluIC0+IHJvdXRpbmdSZXBvc2l0b3J5ICJQZXJzaXN0cyB2aWEiCiAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgIGJvb2tpbmdBcHAgPSBjb250YWluZXIgIkJvb2tpbmcgTW9iaWxlIEFwcCIgIkFsbG93cyBjdXN0b21lcnMgdG8gYm9vayBjYXJnbyBzaGlwbWVudHMiICJSZWFjdCBOYXRpdmUiIHsKICAgICAgICAgICAgICAgICAgICBib29raW5nVUkgPSBjb21wb25lbnQgIkJvb2tpbmcgVUkiICJVc2VyIGludGVyZmFjZSBmb3IgYm9va2luZyBvcGVyYXRpb25zIiAiUmVhY3QgTmF0aXZlIgogICAgICAgICAgICAgICAgICAgIGJvb2tpbmdDbGllbnQgPSBjb21wb25lbnQgIkJvb2tpbmcgQVBJIENsaWVudCIgIkNsaWVudCBmb3IgdGhlIGJvb2tpbmcgQVBJIiAiSmF2YVNjcmlwdCIKICAgICAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgICAgICBib29raW5nVUkgLT4gYm9va2luZ0NsaWVudCAiVXNlcyIKICAgICAgICAgICAgICAgICAgICBib29raW5nQ2xpZW50IC0+IGJhY2tlbmRTeXN0ZW0uYXBpR2F0ZXdheSAiTWFrZXMgQVBJIGNhbGxzIHRvIiAiSlNPTi9IVFRQUyIKICAgICAgICAgICAgICAgIH0KICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgc2FsZXNBcHAgPSBjb250YWluZXIgIlNhbGVzIE1hbmFnZW1lbnQgQXBwIiAiQWxsb3dzIHN0YWZmIHRvIG1hbmFnZSBzYWxlcyBhbmQgY3VzdG9tZXIgcmVsYXRpb25zaGlwcyIgIlJlYWN0IE5hdGl2ZSIgewogICAgICAgICAgICAgICAgICAgIHNhbGVzVUkgPSBjb21wb25lbnQgIlNhbGVzIFVJIiAiVXNlciBpbnRlcmZhY2UgZm9yIHNhbGVzIG9wZXJhdGlvbnMiICJSZWFjdCBOYXRpdmUiCiAgICAgICAgICAgICAgICAgICAgc2FsZXNDbGllbnQgPSBjb21wb25lbnQgIlNhbGVzIEFQSSBDbGllbnQiICJDbGllbnQgZm9yIHRoZSBzYWxlcyBBUEkiICJKYXZhU2NyaXB0IgogICAgICAgICAgICAgICAgICAgIAogICAgICAgICAgICAgICAgICAgIHNhbGVzVUkgLT4gc2FsZXNDbGllbnQgIlVzZXMiCiAgICAgICAgICAgICAgICAgICAgc2FsZXNDbGllbnQgLT4gYmFja2VuZFN5c3RlbS5hcGlHYXRld2F5ICJNYWtlcyBBUEkgY2FsbHMgdG8iICJKU09OL0hUVFBTIgogICAgICAgICAgICAgICAgfQogICAgICAgICAgICAgICAgCiAgICAgICAgICAgICAgICBkYXRhYmFzZSA9IGNvbnRhaW5lciAiRGF0YWJhc2UiICJTdG9yZXMgYWxsIGNhcmdvIHNoaXBwaW5nIGRhdGEiICJQb3N0Z3JlU1FMIiB7CiAgICAgICAgICAgICAgICAgICAgdGFncyAiRGF0YWJhc2UiCiAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgIGJhY2tlbmRTeXN0ZW0gLT4gZGF0YWJhc2UgIlJlYWRzIGZyb20gYW5kIHdyaXRlcyB0byIgIkpEQkMiCiAgICAgICAgICAgIH0KICAgICAgICB9CiAgICAgICAgCiAgICAgICAgIyBFeHRlcm5hbCBTeXN0ZW1zCiAgICAgICAgcGF5bWVudFN5c3RlbSA9IHNvZnR3YXJlU3lzdGVtICJQYXltZW50IFN5c3RlbSIgIkhhbmRsZXMgcGF5bWVudCBwcm9jZXNzaW5nIiAiRXh0ZXJuYWwiCiAgICAgICAgc2hpcHBpbmdQYXJ0bmVycyA9IHNvZnR3YXJlU3lzdGVtICJTaGlwcGluZyBQYXJ0bmVycyIgIkV4dGVybmFsIHNoaXBwaW5nIHByb3ZpZGVycyIgIkV4dGVybmFsIgogICAgICAgIAogICAgICAgICMgU3lzdGVtIENvbnRleHQgUmVsYXRpb25zaGlwcwogICAgICAgIHVzZXIgLT4gY2FyZ29TeXN0ZW0gIkJvb2tzIGFuZCB0cmFja3MgY2FyZ28gdXNpbmciCiAgICAgICAgc3RhZmYgLT4gY2FyZ29TeXN0ZW0gIk1hbmFnZXMgc2FsZXMgYW5kIGN1c3RvbWVycyB1c2luZyIKICAgICAgICBjYXJnb1N5c3RlbSAtPiBwYXltZW50U3lzdGVtICJNYWtlcyBwYXltZW50IHJlcXVlc3RzIHRvIgogICAgICAgIGNhcmdvU3lzdGVtIC0+IHNoaXBwaW5nUGFydG5lcnMgIkNvb3JkaW5hdGVzIHNoaXBwaW5nIHdpdGgiCiAgICAgICAgCiAgICAgICAgIyBEZXBsb3ltZW50IE5vZGVzIGZvciBQcm9kdWN0aW9uCiAgICAgICAgZGVwbG95bWVudEVudmlyb25tZW50ICJQcm9kdWN0aW9uIiB7CiAgICAgICAgICAgIGRlcGxveW1lbnROb2RlICJDbG91ZCBQbGF0Zm9ybSIgewogICAgICAgICAgICAgICAgY29udGFpbmVySW5zdGFuY2UgY2FyZ29TeXN0ZW0uYmFja2VuZFN5c3RlbQogICAgICAgICAgICAgICAgY29udGFpbmVySW5zdGFuY2UgY2FyZ29TeXN0ZW0uZGF0YWJhc2UKICAgICAgICAgICAgfQogICAgICAgICAgICAKICAgICAgICAgICAgZGVwbG95bWVudE5vZGUgIk1vYmlsZSBBcHAgU3RvcmVzIiB7CiAgICAgICAgICAgICAgICBkZXBsb3ltZW50Tm9kZSAiQXBwbGUgQXBwIFN0b3JlIiB7CiAgICAgICAgICAgICAgICAgICAgY29udGFpbmVySW5zdGFuY2UgY2FyZ29TeXN0ZW0uYm9va2luZ0FwcAogICAgICAgICAgICAgICAgICAgIGNvbnRhaW5lckluc3RhbmNlIGNhcmdvU3lzdGVtLnNhbGVzQXBwCiAgICAgICAgICAgICAgICB9CiAgICAgICAgICAgICAgICAKICAgICAgICAgICAgICAgIGRlcGxveW1lbnROb2RlICJHb29nbGUgUGxheSBTdG9yZSIgewogICAgICAgICAgICAgICAgICAgIGNvbnRhaW5lckluc3RhbmNlIGNhcmdvU3lzdGVtLmJvb2tpbmdBcHAKICAgICAgICAgICAgICAgICAgICBjb250YWluZXJJbnN0YW5jZSBjYXJnb1N5c3RlbS5zYWxlc0FwcAogICAgICAgICAgICAgICAgfQogICAgICAgICAgICB9CiAgICAgICAgfQogICAgfQogICAgCiAgICB2aWV3cyB7CiAgICAgICAgc3lzdGVtQ29udGV4dCBjYXJnb1N5c3RlbSAiU3lzdGVtQ29udGV4dCIgewogICAgICAgICAgICBpbmNsdWRlICoKICAgICAgICAgICAgYXV0b0xheW91dAogICAgICAgIH0KICAgICAgICAKICAgICAgICBjb250YWluZXIgY2FyZ29TeXN0ZW0gIkNvbnRhaW5lcnMiIHsKICAgICAgICAgICAgaW5jbHVkZSAqCiAgICAgICAgICAgIGF1dG9MYXlvdXQKICAgICAgICB9CiAgICAgICAgCiAgICAgICAgY29tcG9uZW50IGNhcmdvU3lzdGVtLmJhY2tlbmRTeXN0ZW0gIkJhY2tlbmRDb21wb25lbnRzIiB7CiAgICAgICAgICAgIGluY2x1ZGUgKgogICAgICAgICAgICBhdXRvTGF5b3V0CiAgICAgICAgfQogICAgICAgIAogICAgICAgIGNvbXBvbmVudCBjYXJnb1N5c3RlbS5ib29raW5nQXBwICJCb29raW5nQXBwQ29tcG9uZW50cyIgewogICAgICAgICAgICBpbmNsdWRlICoKICAgICAgICAgICAgYXV0b0xheW91dAogICAgICAgIH0KICAgICAgICAKICAgICAgICBjb21wb25lbnQgY2FyZ29TeXN0ZW0uc2FsZXNBcHAgIlNhbGVzQXBwQ29tcG9uZW50cyIgewogICAgICAgICAgICBpbmNsdWRlICoKICAgICAgICAgICAgYXV0b0xheW91dAogICAgICAgIH0KICAgICAgICAKICAgICAgICAjIERlcGxveW1lbnQgVmlldwogICAgICAgIGRlcGxveW1lbnQgY2FyZ29TeXN0ZW0gIlByb2R1Y3Rpb24iICJQcm9kdWN0aW9uRGVwbG95bWVudCIgewogICAgICAgICAgICBpbmNsdWRlICoKICAgICAgICAgICAgYXV0b0xheW91dAogICAgICAgIH0KCiAgICAgICAgIyBTdHlsaW5nCiAgICAgICAgc3R5bGVzIHsKICAgICAgICAgICAgZWxlbWVudCAiUGVyc29uIiB7CiAgICAgICAgICAgICAgICBzaGFwZSBQZXJzb24KICAgICAgICAgICAgICAgIGJhY2tncm91bmQgIzA4NDI3QgogICAgICAgICAgICAgICAgY29sb3IgI2ZmZmZmZgogICAgICAgICAgICB9CiAgICAgICAgICAgIGVsZW1lbnQgIkV4dGVybmFsIiB7CiAgICAgICAgICAgICAgICBiYWNrZ3JvdW5kICM5OTk5OTkKICAgICAgICAgICAgICAgIGNvbG9yICNmZmZmZmYKICAgICAgICAgICAgfQogICAgICAgICAgICBlbGVtZW50ICJEYXRhYmFzZSIgewogICAgICAgICAgICAgICAgc2hhcGUgQ3lsaW5kZXIKICAgICAgICAgICAgICAgIGJhY2tncm91bmQgIzExNjhCRAogICAgICAgICAgICAgICAgY29sb3IgI2ZmZmZmZgogICAgICAgICAgICB9CiAgICAgICAgICAgIGVsZW1lbnQgIk1vYmlsZSBBcHAiIHsKICAgICAgICAgICAgICAgIHNoYXBlIE1vYmlsZURldmljZVBvcnRyYWl0CiAgICAgICAgICAgICAgICBiYWNrZ3JvdW5kICM0MzhERDUKICAgICAgICAgICAgICAgIGNvbG9yICNmZmZmZmYKICAgICAgICAgICAgfQogICAgICAgIH0KCiAgICAgICAgIyBUaGVtZQogICAgICAgIHRoZW1lIGRlZmF1bHQKICAgIH0KfQ=="
+  },
+  "views" : {
+    "componentViews" : [ {
+      "automaticLayout" : {
+        "applied" : false,
+        "edgeSeparation" : 0,
+        "implementation" : "Graphviz",
+        "nodeSeparation" : 300,
+        "rankDirection" : "TopBottom",
+        "rankSeparation" : 300,
+        "vertices" : false
+      },
+      "containerId" : "4",
+      "elements" : [ {
+        "id" : "5",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "6",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "7",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "8",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "9",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "10",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "11",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "12",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "13",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "14",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "24",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "32",
+        "x" : 0,
+        "y" : 0
+      } ],
+      "externalContainerBoundariesVisible" : false,
+      "key" : "BackendComponents",
+      "order" : 3,
+      "relationships" : [ {
+        "id" : "15"
+      }, {
+        "id" : "16"
+      }, {
+        "id" : "17"
+      }, {
+        "id" : "18"
+      }, {
+        "id" : "19"
+      }, {
+        "id" : "20"
+      }, {
+        "id" : "21"
+      }, {
+        "id" : "22"
+      }, {
+        "id" : "23"
+      }, {
+        "id" : "30"
+      }, {
+        "id" : "38"
+      } ]
+    }, {
+      "automaticLayout" : {
+        "applied" : false,
+        "edgeSeparation" : 0,
+        "implementation" : "Graphviz",
+        "nodeSeparation" : 300,
+        "rankDirection" : "TopBottom",
+        "rankSeparation" : 300,
+        "vertices" : false
+      },
+      "containerId" : "24",
+      "elements" : [ {
+        "id" : "4",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "25",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "26",
+        "x" : 0,
+        "y" : 0
+      } ],
+      "externalContainerBoundariesVisible" : false,
+      "key" : "BookingAppComponents",
+      "order" : 4,
+      "relationships" : [ {
+        "id" : "27"
+      }, {
+        "id" : "29"
+      } ]
+    }, {
+      "automaticLayout" : {
+        "applied" : false,
+        "edgeSeparation" : 0,
+        "implementation" : "Graphviz",
+        "nodeSeparation" : 300,
+        "rankDirection" : "TopBottom",
+        "rankSeparation" : 300,
+        "vertices" : false
+      },
+      "containerId" : "32",
+      "elements" : [ {
+        "id" : "4",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "33",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "34",
+        "x" : 0,
+        "y" : 0
+      } ],
+      "externalContainerBoundariesVisible" : false,
+      "key" : "SalesAppComponents",
+      "order" : 5,
+      "relationships" : [ {
+        "id" : "35"
+      }, {
+        "id" : "37"
+      } ]
+    } ],
+    "configuration" : {
+      "branding" : { },
+      "lastSavedView" : "ProductionDeployment",
+      "styles" : {
+        "elements" : [ {
+          "background" : "#08427b",
+          "color" : "#ffffff",
+          "shape" : "Person",
+          "tag" : "Person"
+        }, {
+          "background" : "#999999",
+          "color" : "#ffffff",
+          "tag" : "External"
+        }, {
+          "background" : "#1168bd",
+          "color" : "#ffffff",
+          "shape" : "Cylinder",
+          "tag" : "Database"
+        }, {
+          "background" : "#438dd5",
+          "color" : "#ffffff",
+          "shape" : "MobileDevicePortrait",
+          "tag" : "Mobile App"
+        } ]
+      },
+      "terminology" : { },
+      "themes" : [ "https://static.structurizr.com/themes/default/theme.json" ]
+    },
+    "containerViews" : [ {
+      "automaticLayout" : {
+        "applied" : false,
+        "edgeSeparation" : 0,
+        "implementation" : "Graphviz",
+        "nodeSeparation" : 300,
+        "rankDirection" : "TopBottom",
+        "rankSeparation" : 300,
+        "vertices" : false
+      },
+      "elements" : [ {
+        "id" : "4",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "24",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "32",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "40",
+        "x" : 0,
+        "y" : 0
+      } ],
+      "externalSoftwareSystemBoundariesVisible" : false,
+      "key" : "Containers",
+      "order" : 2,
+      "relationships" : [ {
+        "id" : "31"
+      }, {
+        "id" : "39"
+      }, {
+        "id" : "41"
+      } ],
+      "softwareSystemId" : "3"
+    } ],
+    "deploymentViews" : [ {
+      "automaticLayout" : {
+        "applied" : false,
+        "edgeSeparation" : 0,
+        "implementation" : "Graphviz",
+        "nodeSeparation" : 300,
+        "rankDirection" : "TopBottom",
+        "rankSeparation" : 300,
+        "vertices" : false
+      },
+      "elements" : [ {
+        "id" : "48",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "49",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "50",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "52",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "53",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "54",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "56",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "58",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "59",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "61",
+        "x" : 0,
+        "y" : 0
+      } ],
+      "environment" : "Production",
+      "key" : "ProductionDeployment",
+      "order" : 6,
+      "relationships" : [ {
+        "id" : "51"
+      }, {
+        "id" : "55"
+      }, {
+        "id" : "57"
+      }, {
+        "id" : "60"
+      }, {
+        "id" : "62"
+      } ],
+      "softwareSystemId" : "3"
+    } ],
+    "systemContextViews" : [ {
+      "automaticLayout" : {
+        "applied" : false,
+        "edgeSeparation" : 0,
+        "implementation" : "Graphviz",
+        "nodeSeparation" : 300,
+        "rankDirection" : "TopBottom",
+        "rankSeparation" : 300,
+        "vertices" : false
+      },
+      "elements" : [ {
+        "id" : "1",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "2",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "3",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "42",
+        "x" : 0,
+        "y" : 0
+      }, {
+        "id" : "43",
+        "x" : 0,
+        "y" : 0
+      } ],
+      "enterpriseBoundaryVisible" : true,
+      "key" : "SystemContext",
+      "order" : 1,
+      "relationships" : [ {
+        "id" : "44"
+      }, {
+        "id" : "45"
+      }, {
+        "id" : "46"
+      }, {
+        "id" : "47"
+      } ],
+      "softwareSystemId" : "3"
+    } ]
+  }
+}
