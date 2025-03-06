@@ -1,0 +1,266 @@
+workspace "Cargo Tracking System" "A cargo shipping system based on DDD principles" {
+
+    model {
+        # People/Actors
+        customer = person "Customer" "Books and tracks cargo shipments"
+        salesRep = person "Sales Representative" "Manages leads and contracts"
+        
+        # External Systems
+        paymentSystem = softwareSystem "Payment System" "Processes payments for bookings" "External"
+        shippingPartners = softwareSystem "Shipping Partners" "External shipping carriers and port authorities" "External"
+        customsSystem = softwareSystem "Customs System" "Manages customs documentation and clearance" "External"
+        
+        # Main System
+        cargoTrackingSystem = softwareSystem "Cargo Tracking System" "Allows customers to book, track, and manage shipments, and sales representatives to manage leads and contracts" {
+            # Mobile Applications
+            iosBookingApp = container "iOS Booking App" "Allows customers to book and track shipments" "Swift" "MobileApp"
+            androidBookingApp = container "Android Booking App" "Allows customers to book and track shipments" "Kotlin" "MobileApp"
+            iosSalesApp = container "iOS Sales App" "Enables sales reps to manage leads and contracts" "Swift" "MobileApp"
+            androidSalesApp = container "Android Sales App" "Enables sales reps to manage leads and contracts" "Kotlin" "MobileApp"
+            
+            # API Gateway
+            apiGateway = container "API Gateway" "Routes requests to appropriate microservices" "API Gateway" "APIGateway"
+            
+            # Backend Services
+            bookingService = container "Booking Service" "Handles cargo booking operations" "REST API" "Service" {
+                bookingController = component "Booking Controller" "Handles HTTP requests for booking operations" "REST Controller"
+                bookingFacade = component "Booking Facade" "Orchestrates booking use cases" "Application Service"
+                
+                cargoBookingUseCase = component "Cargo Booking Use Case" "Books new cargo shipments" "Application Service"
+                routeCargoUseCase = component "Route Cargo Use Case" "Assigns routes to cargos" "Application Service"
+                changeDestinationUseCase = component "Change Destination Use Case" "Changes cargo destination" "Application Service"
+                
+                cargoRepository = component "Cargo Repository" "Interface for cargo persistence" "Repository Interface"
+                voyageRepository = component "Voyage Repository" "Interface for voyage persistence" "Repository Interface"
+                locationRepository = component "Location Repository" "Interface for location persistence" "Repository Interface"
+                
+                routingService = component "Routing Service" "Finds optimal routes for cargo" "Domain Service"
+                pricingService = component "Pricing Service" "Calculates shipping costs" "Domain Service"
+                
+                cargoRepositoryImpl = component "Cargo Repository Impl" "Implements cargo persistence" "Repository Implementation"
+                voyageRepositoryImpl = component "Voyage Repository Impl" "Implements voyage persistence" "Repository Implementation"
+                locationRepositoryImpl = component "Location Repository Impl" "Implements location persistence" "Repository Implementation"
+            }
+            
+            trackingService = container "Tracking Service" "Manages cargo tracking and status updates" "REST API" "Service" {
+                trackingController = component "Tracking Controller" "Handles HTTP requests for tracking operations" "REST Controller"
+                trackingFacade = component "Tracking Facade" "Orchestrates tracking use cases" "Application Service"
+                
+                cargoTrackingUseCase = component "Cargo Tracking Use Case" "Retrieves tracking information for cargo" "Application Service"
+                registerHandlingEventUseCase = component "Register Handling Event Use Case" "Records cargo handling events" "Application Service"
+                
+                handlingEventRepository = component "Handling Event Repository" "Interface for handling event persistence" "Repository Interface"
+                handlingEventRepositoryImpl = component "Handling Event Repository Impl" "Implements handling event persistence" "Repository Implementation"
+            }
+            
+            routingService = container "Routing Service" "Determines optimal routes for cargo" "REST API" "Service" {
+                routingController = component "Routing Controller" "Handles HTTP requests for routing operations" "REST Controller"
+                routingFacade = component "Routing Facade" "Orchestrates routing use cases" "Application Service"
+                
+                findRouteUseCase = component "Find Route Use Case" "Finds possible routes for cargo" "Application Service"
+                
+                voyageRepositoryR = component "Voyage Repository" "Interface for voyage persistence" "Repository Interface"
+                locationRepositoryR = component "Location Repository" "Interface for location persistence" "Repository Interface"
+                
+                routeSpecificationFactory = component "Route Specification Factory" "Creates route specifications" "Domain Service"
+                
+                voyageRepositoryImplR = component "Voyage Repository Impl" "Implements voyage persistence" "Repository Implementation"
+                locationRepositoryImplR = component "Location Repository Impl" "Implements location persistence" "Repository Implementation"
+            }
+            
+            salesService = container "Sales Service" "Manages leads, quotes, and contracts" "REST API" "Service" {
+                salesController = component "Sales Controller" "Handles HTTP requests for sales operations" "REST Controller"
+                salesFacade = component "Sales Facade" "Orchestrates sales use cases" "Application Service"
+                
+                createLeadUseCase = component "Create Lead Use Case" "Creates new sales leads" "Application Service"
+                createQuoteUseCase = component "Create Quote Use Case" "Creates quotes for customers" "Application Service"
+                createContractUseCase = component "Create Contract Use Case" "Creates contracts for customers" "Application Service"
+                
+                customerRepository = component "Customer Repository" "Interface for customer persistence" "Repository Interface"
+                leadRepository = component "Lead Repository" "Interface for lead persistence" "Repository Interface"
+                quoteRepository = component "Quote Repository" "Interface for quote persistence" "Repository Interface"
+                contractRepository = component "Contract Repository" "Interface for contract persistence" "Repository Interface"
+                
+                customerRepositoryImpl = component "Customer Repository Impl" "Implements customer persistence" "Repository Implementation"
+                leadRepositoryImpl = component "Lead Repository Impl" "Implements lead persistence" "Repository Implementation"
+                quoteRepositoryImpl = component "Quote Repository Impl" "Implements quote persistence" "Repository Implementation"
+                contractRepositoryImpl = component "Contract Repository Impl" "Implements contract persistence" "Repository Implementation"
+            }
+            
+            # Databases
+            cargoDb = container "Cargo Database" "Stores cargo, voyage, and tracking information" "Relational Database" "Database"
+            salesDb = container "Sales Database" "Stores customer, lead, and contract information" "Relational Database" "Database"
+        }
+        
+        # External system relationships
+        customer -> cargoTrackingSystem "Books cargo shipments, tracks delivery status"
+        salesRep -> cargoTrackingSystem "Manages leads, creates quotes and contracts"
+        cargoTrackingSystem -> paymentSystem "Processes payments"
+        cargoTrackingSystem -> shippingPartners "Exchanges shipping information"
+        cargoTrackingSystem -> customsSystem "Submits customs documentation"
+        
+        # Customer relationships with mobile apps
+        customer -> iosBookingApp "Uses"
+        customer -> androidBookingApp "Uses"
+        salesRep -> iosSalesApp "Uses"
+        salesRep -> androidSalesApp "Uses"
+        
+        # Mobile apps to API Gateway
+        iosBookingApp -> apiGateway "Makes API calls to" "JSON/HTTPS"
+        androidBookingApp -> apiGateway "Makes API calls to" "JSON/HTTPS"
+        iosSalesApp -> apiGateway "Makes API calls to" "JSON/HTTPS"
+        androidSalesApp -> apiGateway "Makes API calls to" "JSON/HTTPS"
+        
+        # API Gateway to Services
+        apiGateway -> bookingService "Routes booking requests to"
+        apiGateway -> trackingService "Routes tracking requests to"
+        apiGateway -> routingService "Routes routing requests to"
+        apiGateway -> salesService "Routes sales requests to"
+        
+        # Services to Databases
+        bookingService -> cargoDb "Reads from and writes to"
+        trackingService -> cargoDb "Reads from and writes to"
+        routingService -> cargoDb "Reads from"
+        salesService -> salesDb "Reads from and writes to"
+        
+        # Inter-service communication
+        salesService -> bookingService "Creates bookings via"
+        bookingService -> paymentSystem "Processes payments via"
+        trackingService -> shippingPartners "Exchanges data with"
+        bookingService -> customsSystem "Submits documentation to"
+        
+        # Booking Service component relationships
+        bookingController -> bookingFacade "Uses"
+        bookingFacade -> cargoBookingUseCase "Uses"
+        bookingFacade -> routeCargoUseCase "Uses"
+        bookingFacade -> changeDestinationUseCase "Uses"
+        
+        cargoBookingUseCase -> cargoRepository "Uses"
+        cargoBookingUseCase -> pricingService "Uses"
+        routeCargoUseCase -> voyageRepository "Uses"
+        routeCargoUseCase -> locationRepository "Uses"
+        routeCargoUseCase -> routingService "Uses"
+        changeDestinationUseCase -> cargoRepository "Uses"
+        
+        cargoRepositoryImpl -> cargoRepository "Implements"
+        voyageRepositoryImpl -> voyageRepository "Implements"
+        locationRepositoryImpl -> locationRepository "Implements"
+        
+        cargoRepositoryImpl -> cargoDb "Reads from and writes to"
+        voyageRepositoryImpl -> cargoDb "Reads from and writes to"
+        locationRepositoryImpl -> cargoDb "Reads from and writes to"
+        
+        bookingFacade -> paymentSystem "Initiates payment via"
+        
+        # Tracking Service component relationships
+        trackingController -> trackingFacade "Uses"
+        trackingFacade -> cargoTrackingUseCase "Uses"
+        trackingFacade -> registerHandlingEventUseCase "Uses"
+        
+        cargoTrackingUseCase -> cargoRepository "Uses"
+        registerHandlingEventUseCase -> handlingEventRepository "Uses"
+        
+        handlingEventRepositoryImpl -> handlingEventRepository "Implements"
+        handlingEventRepositoryImpl -> cargoDb "Reads from and writes to"
+        
+        # Routing Service component relationships
+        routingController -> routingFacade "Uses"
+        routingFacade -> findRouteUseCase "Uses"
+        
+        findRouteUseCase -> voyageRepositoryR "Uses"
+        findRouteUseCase -> locationRepositoryR "Uses"
+        findRouteUseCase -> routeSpecificationFactory "Uses"
+        
+        voyageRepositoryImplR -> voyageRepositoryR "Implements"
+        locationRepositoryImplR -> locationRepositoryR "Implements"
+        
+        voyageRepositoryImplR -> cargoDb "Reads from"
+        locationRepositoryImplR -> cargoDb "Reads from"
+        
+        # Sales Service component relationships
+        salesController -> salesFacade "Uses"
+        salesFacade -> createLeadUseCase "Uses"
+        salesFacade -> createQuoteUseCase "Uses"
+        salesFacade -> createContractUseCase "Uses"
+        
+        createLeadUseCase -> leadRepository "Uses"
+        createQuoteUseCase -> quoteRepository "Uses"
+        createQuoteUseCase -> customerRepository "Uses"
+        createContractUseCase -> contractRepository "Uses"
+        createContractUseCase -> customerRepository "Uses"
+        
+        customerRepositoryImpl -> customerRepository "Implements"
+        leadRepositoryImpl -> leadRepository "Implements"
+        quoteRepositoryImpl -> quoteRepository "Implements"
+        contractRepositoryImpl -> contractRepository "Implements"
+        
+        customerRepositoryImpl -> salesDb "Reads from and writes to"
+        leadRepositoryImpl -> salesDb "Reads from and writes to"
+        quoteRepositoryImpl -> salesDb "Reads from and writes to"
+        contractRepositoryImpl -> salesDb "Reads from and writes to"
+    }
+    
+    views {
+        systemContext cargoTrackingSystem "SystemContext" {
+            include *
+            autoLayout
+        }
+        
+        container cargoTrackingSystem "Containers" {
+            include *
+            autoLayout
+        }
+        
+        component bookingService "BookingServiceComponents" {
+            include *
+            autoLayout
+        }
+        
+        component trackingService "TrackingServiceComponents" {
+            include *
+            autoLayout
+        }
+        
+        component routingService "RoutingServiceComponents" {
+            include *
+            autoLayout
+        }
+        
+        component salesService "SalesServiceComponents" {
+            include *
+            autoLayout
+        }
+        
+        styles {
+            element "Person" {
+                shape Person
+                background #08427B
+                color #ffffff
+            }
+            element "External" {
+                background #999999
+                color #ffffff
+            }
+            element "Service" {
+                shape Box
+                background #438dd5
+                color #ffffff
+            }
+            element "MobileApp" {
+                shape MobileDevicePortrait
+                background #438dd5
+                color #ffffff
+            }
+            element "APIGateway" {
+                shape Pipe
+                background #438dd5
+                color #ffffff
+            }
+            element "Database" {
+                shape Cylinder
+                background #438dd5
+                color #ffffff
+            }
+        }
+    }
+}
