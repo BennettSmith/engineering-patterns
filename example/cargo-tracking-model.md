@@ -22,136 +22,37 @@ This document outlines the domain model for a cargo shipping system based on pri
   - [Entity Relationships](#entity-relationships)
   - [Domain Services](#domain-services)
 
-## System Context
+## System Architecture Overview
 
-```mermaid
-C4Context
-title System Context Diagram - Cargo Tracking System
+The architecture of the Cargo Tracking System follows the C4 model approach with multiple layers:
 
-Person(customer, "Customer", "Books and tracks cargo shipments")
-Person(salesPerson, "Sales Representative", "Manages leads and contracts")
+### System Context
+- **Actors**: Customers (booking cargo shipments), Sales Representatives (managing leads and contracts)
+- **External Systems**: Payment System, Shipping Partners, Customs System
+- **Core System**: Cargo Tracking System handling all shipping operations
 
-System(cargoSystem, "Cargo Tracking System", "Allows customers to book, track, and manage shipments, and sales representatives to manage leads and contracts")
+### Container Architecture
+- **Mobile Applications**:
+  - iOS and Android Booking Apps for customers
+  - iOS and Android Sales Apps for sales representatives
+- **Backend Services**:
+  - API Gateway routing requests to appropriate services
+  - Booking Service handling cargo booking operations
+  - Tracking Service managing cargo tracking and status updates
+  - Routing Service determining optimal routes for cargo
+  - Sales Service managing leads, quotes, and contracts
+- **Databases**:
+  - Cargo Database storing cargo, voyage, and tracking information
+  - Sales Database storing customer, lead, and contract information
 
-System_Ext(paymentSystem, "Payment System", "Processes payments for bookings")
-System_Ext(shippingPartners, "Shipping Partners", "External shipping carriers and port authorities")
-System_Ext(customsSystem, "Customs System", "Manages customs documentation and clearance")
-
-Rel(customer, cargoSystem, "Books cargo shipments, tracks delivery status")
-Rel(salesPerson, cargoSystem, "Manages leads, creates quotes and contracts")
-Rel(cargoSystem, paymentSystem, "Processes payments")
-Rel(cargoSystem, shippingPartners, "Exchanges shipping information")
-Rel(cargoSystem, customsSystem, "Submits customs documentation")
-```
-
-## Container View
-
-```mermaid
-C4Container
-title Container View - Cargo Tracking System
-
-Person(customer, "Customer", "Books and tracks cargo shipments")
-Person(salesPerson, "Sales Representative", "Manages leads and contracts")
-
-System_Boundary(cargoSystem, "Cargo Tracking System") {
-    Container(iosBookingApp, "iOS Booking App", "Swift", "Allows customers to book and track shipments")
-    Container(androidBookingApp, "Android Booking App", "Kotlin", "Allows customers to book and track shipments")
-    
-    Container(iosSalesApp, "iOS Sales App", "Swift", "Enables sales reps to manage leads and contracts")
-    Container(androidSalesApp, "Android Sales App", "Kotlin", "Enables sales reps to manage leads and contracts")
-    
-    Container(apiGateway, "API Gateway", "API Gateway", "Routes requests to appropriate microservices")
-    
-    Container(bookingService, "Booking Service", "REST API", "Handles cargo booking operations")
-    Container(trackingService, "Tracking Service", "REST API", "Manages cargo tracking and status updates")
-    Container(routingService, "Routing Service", "REST API", "Determines optimal routes for cargo")
-    Container(salesService, "Sales Service", "REST API", "Manages leads, quotes, and contracts")
-    
-    ContainerDb(cargoDb, "Cargo Database", "Stores cargo, voyage, and tracking information")
-    ContainerDb(salesDb, "Sales Database", "Stores customer, lead, and contract information")
-}
-
-System_Ext(paymentSystem, "Payment System", "Processes payments for bookings")
-System_Ext(shippingPartners, "Shipping Partners", "External shipping carriers and port authorities")
-System_Ext(customsSystem, "Customs System", "Manages customs documentation and clearance")
-
-Rel(customer, iosBookingApp, "Uses")
-Rel(customer, androidBookingApp, "Uses")
-Rel(salesPerson, iosSalesApp, "Uses")
-Rel(salesPerson, androidSalesApp, "Uses")
-
-Rel(iosBookingApp, apiGateway, "Makes API calls to", "JSON/HTTPS")
-Rel(androidBookingApp, apiGateway, "Makes API calls to", "JSON/HTTPS")
-Rel(iosSalesApp, apiGateway, "Makes API calls to", "JSON/HTTPS")
-Rel(androidSalesApp, apiGateway, "Makes API calls to", "JSON/HTTPS")
-
-Rel(apiGateway, bookingService, "Routes booking requests to")
-Rel(apiGateway, trackingService, "Routes tracking requests to")
-Rel(apiGateway, routingService, "Routes routing requests to")
-Rel(apiGateway, salesService, "Routes sales requests to")
-
-Rel(bookingService, cargoDb, "Reads from and writes to")
-Rel(trackingService, cargoDb, "Reads from and writes to")
-Rel(routingService, cargoDb, "Reads from")
-Rel(salesService, salesDb, "Reads from and writes to")
-
-Rel(salesService, bookingService, "Creates bookings via")
-Rel(bookingService, paymentSystem, "Processes payments via")
-Rel(trackingService, shippingPartners, "Exchanges data with")
-Rel(bookingService, customsSystem, "Submits documentation to")
-```
-
-## Component View
-
-```mermaid
-C4Component
-title Component View - Booking Service
-
-Container_Boundary(bookingService, "Booking Service") {
-    Component(bookingController, "Booking Controller", "REST Controller", "Handles HTTP requests for booking operations")
-    Component(bookingFacade, "Booking Facade", "Application Service", "Orchestrates booking use cases")
-    
-    Component(cargoBookingUseCase, "Cargo Booking Use Case", "Application Service", "Books new cargo shipments")
-    Component(routeCargoUseCase, "Route Cargo Use Case", "Application Service", "Assigns routes to cargos")
-    Component(changeDestinationUseCase, "Change Destination Use Case", "Application Service", "Changes cargo destination")
-    
-    Component(cargoRepository, "Cargo Repository", "Repository Interface", "Interface for cargo persistence")
-    Component(voyageRepository, "Voyage Repository", "Repository Interface", "Interface for voyage persistence")
-    Component(locationRepository, "Location Repository", "Repository Interface", "Interface for location persistence")
-    
-    Component(routingService, "Routing Service", "Domain Service", "Finds optimal routes for cargo")
-    Component(pricingService, "Pricing Service", "Domain Service", "Calculates shipping costs")
-    
-    Component(cargoRepositoryImpl, "Cargo Repository Impl", "Repository Implementation", "Implements cargo persistence")
-    Component(voyageRepositoryImpl, "Voyage Repository Impl", "Repository Implementation", "Implements voyage persistence")
-    Component(locationRepositoryImpl, "Location Repository Impl", "Repository Implementation", "Implements location persistence")
-}
-
-ContainerDb(cargoDb, "Cargo Database", "Stores cargo and related data")
-System_Ext(paymentSystem, "Payment System", "Processes payments")
-
-Rel(bookingController, bookingFacade, "Uses")
-Rel(bookingFacade, cargoBookingUseCase, "Uses")
-Rel(bookingFacade, routeCargoUseCase, "Uses")
-Rel(bookingFacade, changeDestinationUseCase, "Uses")
-
-Rel(cargoBookingUseCase, cargoRepository, "Uses")
-Rel(cargoBookingUseCase, pricingService, "Uses")
-Rel(routeCargoUseCase, voyageRepository, "Uses")
-Rel(routeCargoUseCase, locationRepository, "Uses")
-Rel(routeCargoUseCase, routingService, "Uses")
-Rel(changeDestinationUseCase, cargoRepository, "Uses")
-
-Rel(cargoRepositoryImpl, cargoDb, "Reads from and writes to")
-Rel(voyageRepositoryImpl, cargoDb, "Reads from and writes to")
-Rel(locationRepositoryImpl, cargoDb, "Reads from and writes to")
-
-Rel(cargoRepositoryImpl, cargoRepository, "Implements")
-Rel(voyageRepositoryImpl, voyageRepository, "Implements")
-Rel(locationRepositoryImpl, locationRepository, "Implements")
-
-Rel(bookingFacade, paymentSystem, "Initiates payment via")
-```
+### Component Structure
+Each service follows Clean Architecture principles with components organized into:
+- Controllers handling HTTP requests
+- Application Services/Facades orchestrating use cases
+- Use Cases implementing specific business operations
+- Domain Services providing core domain logic
+- Repositories defining interfaces for data access
+- Repository Implementations handling actual persistence
 
 ## Domain Model
 
